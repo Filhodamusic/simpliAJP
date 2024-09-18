@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<span th:text="${msg}" style="color:red"></span>
+<h2>Product Management System</h2>
+<form action="#" th:action="@{/addProduct}" method="post" th:object="${product}">
+<label>PId</label>
+<input type="number" th:field="*{pid}" /><br/>
+<label>PName</label>
+<input type="text" th:field="*{pname}" /><br/>
+<label>Price</label>
+<input type="number" th:field="*{pprice}"/> <br/>
+<input type="submit" th:value="${bb}" name="mySubmitButton"/>
+<input type="reset" value="reset"/>
+</form>
+<hr/>
+<table border="1">
+	<tr>
+		<th>PID</th>
+		<th>PName</th>
+		<th>PPrice</th>
+		<th>Delete</th>
+		<th>Update</th>
+	</tr>
+	<tr th:each="p:${products}">
+		<td th:text="${p.pid}"></td>
+		<td th:text="${p.pname}"></td>
+		<td th:text="${p.pprice}"></td>
+		<td><a th:href="@{/deleteProduct(pid=${p.pid})}">Delete</a></td>
+		<td><a th:href="@{/updateProductInfo(pid=${p.pid})}">Update</a></td>
+	</tr>
+</table>
+</body>
+</html>
