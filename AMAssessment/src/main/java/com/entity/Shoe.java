@@ -27,6 +27,7 @@ public class Shoe {
 	@OneToMany
 	@JoinColumn(name = "pid")
 	private List<Order> orders;
+	
 	public int getPid() {
 		return pid;
 	}
