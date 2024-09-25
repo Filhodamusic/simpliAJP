@@ -18,6 +18,8 @@ private String name;
 private float amount;
 @Column(unique = true)
 private String emailid;
+
+
 public int getAccno() {
 	return accno;
 }
