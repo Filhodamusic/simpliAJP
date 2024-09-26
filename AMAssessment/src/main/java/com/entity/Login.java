@@ -14,6 +14,18 @@ public class Login {
 	private String password;
 	private String userType;
 	private int accno;
+	
+    // Default no-argument constructor
+    public Login() {
+    }
+    
+	public Login(String emailid, String password, String userType, int accno) {
+		super();
+		this.emailid = emailid;
+		this.password = password;
+		this.userType = userType;
+		this.accno = accno;
+	}
 	public String getEmailid() {
 		return emailid;
 	}
