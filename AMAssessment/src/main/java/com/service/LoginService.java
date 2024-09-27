@@ -17,10 +17,18 @@ public class LoginService {
 	AccountService accountService;
 	
 	public String signIn(LoginTransfer login) {
-		if(loginRepo.findLoginByEmailId(login.getEmailid().toString()).getEmailid().isEmpty()) {
-			return "success";
-		}else {
+		if(loginRepo.findLoginByEmailId(login.getEmailid().toString())==null) {
 			return "failure";
+		}else {
+			if(loginRepo.findLoginByEmailId(login.getEmailid().toString()).getPassword().contentEquals(login.getPassword())) {
+				if(loginRepo.findLoginByEmailId(login.getEmailid().toString()).getUserType().contentEquals("admin")) {
+					return "admin";
+				}else {
+					return "user";
+				}
+			}else {
+				return "failure";
+			}
 		}
 	}
 	

@@ -23,15 +23,29 @@ public class LoginController {
 		return "login";
 	}
 	
+	@RequestMapping(value = "admin",method = RequestMethod.GET)
+	public String openAdminPage() {  	
+		return "admin";
+	}
+	
+	@RequestMapping(value = "user",method = RequestMethod.GET)
+	public String openUserPage() {  	
+		return "user";
+	}
+	
 	
 	@RequestMapping(value = "signIn",method = RequestMethod.POST)
 	public String signIn(@ModelAttribute("logintransfer") LoginTransfer ll, Model mm) {  
 		mm.addAttribute("login", ll);		
 		String result = loginService.signIn(ll);
-		if(result.equals("success")) {
-			return "success";
+		if(result.equals("user")) {
+			return "redirect:/user";
 		}else {
-			return "failure";
+			if(result.equals("admin")) {
+				return "redirect:/admin";
+			}else {
+				return "redirect:/login?error";
+			}
 		}
 	}
 	
