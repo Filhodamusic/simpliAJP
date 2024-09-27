@@ -26,7 +26,7 @@ public class Shoe {
 	private int qty;
 	@OneToMany
 	@JoinColumn(name = "pid")
-	private List<Order> orders;
+	private List<Orders> orders;
 	
 	public int getPid() {
 		return pid;
@@ -52,10 +52,10 @@ public class Shoe {
 	public void setQty(int qty) {
 		this.qty = qty;
 	}
-	public List<Order> getOrders() {
+	public List<Orders> getOrders() {
 		return orders;
 	}
-	public void setOrders(List<Order> orders) {
+	public void setOrders(List<Orders> orders) {
 		this.orders = orders;
 	}
 

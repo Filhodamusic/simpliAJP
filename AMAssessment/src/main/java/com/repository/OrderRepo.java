@@ -8,15 +8,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.entity.Order;
+import com.entity.Orders;
 
 @Repository
-public interface OrderRepo extends JpaRepository<Order, Integer>{
+public interface OrderRepo extends JpaRepository<Orders, Integer>{
 
 	@Query("select o from Orders o where o.pid = :pid")
-	public List<Order> findOrderByProcuctId(@Param("pid") int pid);
+	public List<Orders> findOrderByProcuctId(@Param("pid") int pid);
 	
 	@Query("select o from Orders o where o.orderdatatime = :orderdatatime")
-	public List<Order> findOrderByDate(@Param("orderdatatime") int orderdatatime);
+	public List<Orders> findOrderByDate(@Param("orderdatatime") int orderdatatime);
 	
 }

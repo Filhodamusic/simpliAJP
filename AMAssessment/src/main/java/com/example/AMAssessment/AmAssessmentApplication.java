@@ -29,10 +29,12 @@ public class AmAssessmentApplication {
 	AccountRepo accountRepo;
 	@PostConstruct
 	public void init() {
-	    Login ll = new Login("admin@gmail.com","admin@123","admin",1);
-	    loginRepo.save(ll);
-	    Account account = new Account("admin",10000000,"admin@gmail.com");
-	    accountRepo.save(account);
+		Login ll = new Login("admin@gmail.com","admin@123","admin",1);
+		if(loginRepo.findLoginByEmailId(ll.getEmailid().toString()).toString().isEmpty()) {
+		    loginRepo.save(ll);
+		    Account account = new Account("admin",10000000,"admin@gmail.com");
+		    accountRepo.save(account);
+		}
 	}
 
 }

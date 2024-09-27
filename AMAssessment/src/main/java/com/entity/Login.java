@@ -50,6 +50,12 @@ public class Login {
 	public void setAccno(int accno) {
 		this.accno = accno;
 	}
+
+	@Override
+	public String toString() {
+		return "Login [emailid=" + emailid + ", password=" + password + ", userType=" + userType + ", accno=" + accno
+				+ "]";
+	}
 	
 
 
