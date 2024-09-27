@@ -1,8 +1,13 @@
 package com.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 
 @Entity
@@ -14,6 +19,8 @@ public class Login {
 	private String password;
 	private String userType;
 	private int accno;
+    @OneToMany()
+    private List<Orders> orders;
 	
     // Default no-argument constructor
     public Login() {
@@ -55,6 +62,14 @@ public class Login {
 	public String toString() {
 		return "Login [emailid=" + emailid + ", password=" + password + ", userType=" + userType + ", accno=" + accno
 				+ "]";
+	}
+
+	public List<Orders> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(List<Orders> orders) {
+		this.orders = orders;
 	}
 	
 

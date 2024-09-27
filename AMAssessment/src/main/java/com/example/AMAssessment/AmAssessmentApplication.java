@@ -1,5 +1,7 @@
 package com.example.AMAssessment;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,6 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.entity.Account;
 import com.entity.Login;
+import com.entity.Orders;
 import com.repository.LoginRepo;
 import com.repository.AccountRepo;
 
@@ -30,7 +33,8 @@ public class AmAssessmentApplication {
 	@PostConstruct
 	public void init() {
 		Login ll = new Login("admin@gmail.com","admin@123","admin",1);
-		if(loginRepo.findLoginByEmailId(ll.getEmailid().toString()).toString().isEmpty()) {
+		Optional<Login> result = Optional.ofNullable(loginRepo.findLoginByEmailId(ll.getEmailid()));
+		if(result.isEmpty()) {
 		    loginRepo.save(ll);
 		    Account account = new Account("admin",10000000,"admin@gmail.com");
 		    accountRepo.save(account);

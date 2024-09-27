@@ -11,6 +11,8 @@ import com.entity.Login;
 import com.entity.LoginTransfer;
 import com.service.LoginService;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 //@RequestMapping("login")
 public class LoginController {
@@ -24,24 +26,34 @@ public class LoginController {
 	}
 	
 	@RequestMapping(value = "admin",method = RequestMethod.GET)
-	public String openAdminPage() {  	
+	public String openAdminPage(HttpSession session, Model mm) {  	
+		LoginTransfer loggedInUser = (LoginTransfer) session.getAttribute("loggedInUser");
+        if (loggedInUser != null) {
+            mm.addAttribute("logintransfer", loggedInUser); 
+        }
 		return "admin";
 	}
 	
 	@RequestMapping(value = "user",method = RequestMethod.GET)
-	public String openUserPage() {  	
+	public String openUserPage(HttpSession session, Model mm) {  	
+		LoginTransfer loggedInUser = (LoginTransfer) session.getAttribute("loggedInUser");
+        if (loggedInUser != null) {
+            mm.addAttribute("logintransfer", loggedInUser); 
+        }
 		return "user";
 	}
 	
 	
 	@RequestMapping(value = "signIn",method = RequestMethod.POST)
-	public String signIn(@ModelAttribute("logintransfer") LoginTransfer ll, Model mm) {  
+	public String signIn(@ModelAttribute("logintransfer") LoginTransfer ll, Model mm, HttpSession session) {  
 		mm.addAttribute("login", ll);		
 		String result = loginService.signIn(ll);
 		if(result.equals("user")) {
+			session.setAttribute("loggedInUser", ll);
 			return "redirect:/user";
 		}else {
 			if(result.equals("admin")) {
+				session.setAttribute("loggedInUser", ll);
 				return "redirect:/admin";
 			}else {
 				return "redirect:/login?error";
