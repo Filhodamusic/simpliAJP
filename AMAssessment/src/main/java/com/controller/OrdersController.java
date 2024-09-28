@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.entity.LoginTransfer;
 import com.entity.Orders;
+import com.service.LoginService;
 import com.service.OrdersService;
+
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("orders") // http://localhost:9191/orders
@@ -21,10 +25,15 @@ public class OrdersController {
 
 	@Autowired
 	OrdersService ordersService;
+	@Autowired
+	LoginService loginService;
 // curl -X POST http://localhost:9191/orders/place -H "Content-Type:application/json" -d '{"pid":111,"qty":2}'
 	
 	@PostMapping(value = "place",consumes = MediaType.APPLICATION_JSON_VALUE)
-	public String placeOrders(@RequestBody Orders order) {
+	public String placeOrders(@RequestBody Orders order, HttpSession session) {
+		Orders myOrder = order;
+		LoginTransfer myLoginTransfer = (LoginTransfer) session.getAttribute("loggedInUser");
+		myOrder.setLogin(loginService.findLoginByEmail(myLoginTransfer.getEmailid()));
 		return ordersService.placeOrder(order);
 	}
 	

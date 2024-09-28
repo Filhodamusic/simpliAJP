@@ -21,6 +21,7 @@ public class OrdersService {
 	@Autowired
 	ShoeRepo shoeRepository;
 	
+	
 	public String placeOrder(Orders order ) {		// pid, qty 
 		Optional<Shoe> result = shoeRepository.findById(order.getPid());
 		if(result.isPresent()) {

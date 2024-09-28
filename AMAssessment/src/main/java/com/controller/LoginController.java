@@ -62,13 +62,15 @@ public class LoginController {
 	}
 	
 	@RequestMapping(value = "signUp",method = RequestMethod.POST)
-	public String signUp(@ModelAttribute("logintransfer") LoginTransfer ll, Model mm) {
+	public String signUp(@ModelAttribute("logintransfer") LoginTransfer ll, Model mm, HttpSession session) {
 		mm.addAttribute("login", ll);
 		String result = loginService.signUp(ll);
-		if(result.equals("success")) {
-			return "success";
+		if(result.equals("user")) {
+			session.setAttribute("loggedInUser", ll);
+			return "redirect:/user";
 		}else {
-			return "failure";
+			session.setAttribute("loggedInUser", ll);
+			return "redirect:/login?error";
 		}
 	}
 	@RequestMapping(value = "updateAdminPass",method = RequestMethod.POST)

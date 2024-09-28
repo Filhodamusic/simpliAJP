@@ -1,11 +1,15 @@
 package com.service;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.entity.Account;
 import com.entity.Login;
 import com.entity.LoginTransfer;
+import com.entity.Shoe;
 import com.repository.AccountRepo;
 import com.repository.LoginRepo;
 
@@ -45,10 +49,10 @@ public class LoginService {
 				accountService.createAccount(myAccount);
 				myLogin.setAccno(accountService.findAccno(login.getEmailid()));
 				loginRepo.save(myLogin);
-				return "success";		
+				return "user";		
 			}
 		}else {
-			return "Account Already Exists";
+			return "failure";
 		}
 	}
 	public String updateAdminPass(LoginTransfer login) {
@@ -66,5 +70,12 @@ public class LoginService {
 
 		}
 	}
-	
+	public Login findLoginByEmail(String emailId) {
+		Optional<Login> result=Optional.ofNullable(loginRepo.findLoginByEmailId(emailId));
+		if(result.isPresent()) {
+			return result.get();
+		}else {
+			return null;
+		}
+	}
 }
