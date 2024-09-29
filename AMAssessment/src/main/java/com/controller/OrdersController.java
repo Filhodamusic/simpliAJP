@@ -28,14 +28,33 @@ public class OrdersController {
 	@Autowired
 	LoginService loginService;
 // curl -X POST http://localhost:9191/orders/place -H "Content-Type:application/json" -d '{"pid":111,"qty":2}'
-	
-	@PostMapping(value = "place",consumes = MediaType.APPLICATION_JSON_VALUE)
-	public String placeOrders(@RequestBody Orders order, HttpSession session) {
-		Orders myOrder = order;
-		LoginTransfer myLoginTransfer = (LoginTransfer) session.getAttribute("loggedInUser");
-		myOrder.setLogin(loginService.findLoginByEmail(myLoginTransfer.getEmailid()));
-		return ordersService.placeOrder(order);
+	@PostMapping(value = "place")
+	public String placeOrders(@RequestParam("pid") int pid, @RequestParam("qty") int qty, HttpSession session) {
+	    Orders myOrder = new Orders();
+	    myOrder.setPid(pid);
+	    myOrder.setQty(qty);
+
+	    LoginTransfer myLoginTransfer = (LoginTransfer) session.getAttribute("loggedInUser");
+	    if (myLoginTransfer != null) {
+	        myOrder.setLogin(loginService.findLoginByEmail(myLoginTransfer.getEmailid()));
+	    }
+
+	    return ordersService.placeOrder(myOrder);
 	}
+
+//	@PostMapping(value = "place")
+//	public String placeOrders(@RequestBody OrdersTransfer orderRequest, HttpSession session) {
+//	    Orders myOrder = new Orders();
+//	    myOrder.setPid(orderRequest.getPid()); 
+//	    myOrder.setQty(orderRequest.getQty()); 
+//	   
+//	    LoginTransfer myLoginTransfer = (LoginTransfer) session.getAttribute("loggedInUser");
+//	    if (myLoginTransfer != null) {
+//	        myOrder.setLogin(loginService.findLoginByEmail(myLoginTransfer.getEmailid()));
+//	    }
+//	    return ordersService.placeOrder(myOrder);
+//	}
+
 	
 	// curl -X GET http://localhost:9191/orders/find
 	@GetMapping(value = "find",produces = MediaType.APPLICATION_JSON_VALUE)

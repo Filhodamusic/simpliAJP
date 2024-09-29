@@ -5,6 +5,15 @@
 <title>Insert title here</title>
 </head>
 <body>
-<h2>Successfully login</h2>
+<h2>Place an Order</h2>
+<form th:action="@{/orders/place}" method="post">
+    <label for="pid">Product ID:</label>
+    <input type="number" id="pid" name="pid" required/><br/><br/>
+    
+    <label for="qty">Quantity:</label>
+    <input type="number" id="qty" name="qty" required/><br/><br/>
+    
+    <input type="submit" value="Place Order"/>
+</form>
 </body>
 </html>

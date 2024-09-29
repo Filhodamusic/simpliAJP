@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.entity.Login;
 import com.entity.LoginTransfer;
+import com.entity.Orders;
 import com.service.LoginService;
 
 import jakarta.servlet.http.HttpSession;
@@ -35,7 +36,8 @@ public class LoginController {
 	}
 	
 	@RequestMapping(value = "user",method = RequestMethod.GET)
-	public String openUserPage(HttpSession session, Model mm) {  	
+	public String openUserPage(HttpSession session, Model mm) { 
+		mm.addAttribute("orders", new Orders());	
 		LoginTransfer loggedInUser = (LoginTransfer) session.getAttribute("loggedInUser");
         if (loggedInUser != null) {
             mm.addAttribute("logintransfer", loggedInUser); 
@@ -46,7 +48,8 @@ public class LoginController {
 	
 	@RequestMapping(value = "signIn",method = RequestMethod.POST)
 	public String signIn(@ModelAttribute("logintransfer") LoginTransfer ll, Model mm, HttpSession session) {  
-		mm.addAttribute("login", ll);		
+		mm.addAttribute("login", ll);	
+		mm.addAttribute("orders", new Orders());
 		String result = loginService.signIn(ll);
 		if(result.equals("user")) {
 			session.setAttribute("loggedInUser", ll);
