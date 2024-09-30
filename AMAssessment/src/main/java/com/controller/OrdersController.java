@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.entity.LoginTransfer;
+import com.entity.OrderShoe;
+import com.entity.OrderShoeTransfer;
 import com.entity.Orders;
+import com.entity.Shoe;
 import com.service.LoginService;
 import com.service.OrdersService;
 import com.service.ShoeService;
@@ -38,18 +42,30 @@ public class OrdersController {
 // curl -X POST http://localhost:9191/orders/place -H "Content-Type:application/json" -d '{"pid":111,"qty":2}'
 	
 	@PostMapping(value = "place")
-	public void placeOrders(@RequestParam("pid") int pid, @RequestParam("qty") int qty, HttpSession session, Model mm,HttpServletResponse response) throws IOException {
+	public void placeOrders(@ModelAttribute OrderShoeTransfer orderShoeTransfer, HttpSession session, Model mm,HttpServletResponse response) throws IOException {
 		try {
 			Orders myOrder = new Orders();
-		    myOrder.setPid(pid);
-		    myOrder.setQty(qty);
-		    String result;
+			List<OrderShoe> orderShoeList = new ArrayList<>();
+			
+	        for (OrderShoeTransfer.OrderShoeItem item : orderShoeTransfer.getOrderShoes()) {
+	            OrderShoe orderShoe = new OrderShoe();
+	            orderShoe.setQuantity(item.getQuantity());
+
+	            // Set the shoe object in the orderShoe
+	            Shoe shoe = new Shoe();
+	            shoe.setPid(item.getPid());
+	            orderShoe.setShoe(shoe);;
+	            System.out.println("Product ID: " + item.getPid() + ", Quantity: " + item.getQuantity());
+	            orderShoeList.add(orderShoe);
+	        }
+	        myOrder.setOrderShoe(orderShoeList);
 	
 		    LoginTransfer myLoginTransfer = (LoginTransfer) session.getAttribute("loggedInUser");
 		    if (myLoginTransfer != null) {
 		        myOrder.setLogin(loginService.findLoginByEmail(myLoginTransfer.getEmailid()));
 		    }
-		    result=ordersService.placeOrder(myOrder);
+		    
+		    String result=ordersService.placeOrder(myOrder);
 		    if(result.contentEquals("success")) {
 	           mm.addAttribute("shoes", shoeService.findAll());
 	           mm.addAttribute("successMessage", "Order placed successfully!");

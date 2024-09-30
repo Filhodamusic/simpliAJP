@@ -13,7 +13,7 @@ import com.entity.Orders;
 @Repository
 public interface OrderRepo extends JpaRepository<Orders, Integer>{
 
-	@Query("select o from Orders o where o.pid = :pid")
+	@Query("SELECT o FROM Orders o JOIN o.orderShoe os WHERE os.shoe.id = :pid")
 	public List<Orders> findOrderByProcuctId(@Param("pid") int pid);
 	
 	@Query("select o from Orders o where o.orderdatatime = :orderdatatime")

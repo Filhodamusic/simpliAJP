@@ -1,5 +1,8 @@
 package com.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.entity.Login;
 import com.entity.LoginTransfer;
+import com.entity.OrderShoe;
+import com.entity.OrderShoeTransfer;
 import com.entity.Orders;
 import com.service.LoginService;
 import com.service.OrdersService;
@@ -43,7 +48,10 @@ public class LoginController {
 	
 	@RequestMapping(value = "/user",method = RequestMethod.GET)
 	public String openUserPage(HttpSession session, Model mm) { 
-		mm.addAttribute("orders", new Orders());	
+		OrderShoeTransfer orderShoeTransfer = new OrderShoeTransfer();
+        orderShoeTransfer.setOrderShoes(new ArrayList<>());
+        mm.addAttribute("orderShoeTransfer", orderShoeTransfer);
+	
 		LoginTransfer loggedInUser = (LoginTransfer) session.getAttribute("loggedInUser");
         if (loggedInUser != null) {
             mm.addAttribute("logintransfer", loggedInUser); 
@@ -58,7 +66,6 @@ public class LoginController {
 	@RequestMapping(value = "signIn",method = RequestMethod.POST)
 	public String signIn(@ModelAttribute("logintransfer") LoginTransfer ll, Model mm, HttpSession session) {  
 		mm.addAttribute("login", ll);	
-		mm.addAttribute("orders", new Orders());
 		String result = loginService.signIn(ll);
 		if(result.equals("user")) {
 			session.setAttribute("loggedInUser", ll);

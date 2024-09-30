@@ -3,10 +3,12 @@ package com.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.entity.OrderShoe;
 import com.entity.Orders;
 import com.entity.Shoe;
 import com.repository.OrderRepo;
@@ -23,22 +25,26 @@ public class OrdersService {
 	
 	
 	public String placeOrder(Orders order ) {		// pid, qty 
-		Optional<Shoe> result = shoeRepository.findById(order.getPid());
-		if(result.isPresent()) {
-			Shoe p = result.get();
-			if (p.getQty()-order.getQty()>=0) {
-				order.setOrderdatatime(LocalDateTime.now());
-				ordersRepository.save(order);
-				p.setQty(p.getQty()-order.getQty());
-				shoeRepository.saveAndFlush(p);
-				return "success";
-			}else {
-				return "failure";
-			}
-		}else {
-			return "failure";
+		for (OrderShoe orderShoe : order.getOrderShoe()) {	
+			Optional<Shoe> result = shoeRepository.findById(orderShoe.getShoe().getPid());
+			 if (result.isPresent()) {
+		            Shoe shoe = result.get();
+		            if (shoe.getQty() - orderShoe.getQuantity() >= 0) {
+		                shoe.setQty(shoe.getQty() - orderShoe.getQuantity());
+		                orderShoe.setOrder(order); 
+		            } else {
+		                return "failure";
+		            }
+		        } else {
+		            return "failure"; 
+		        }
+		    }
+		    order.setOrderdatatime(LocalDateTime.now());
+		    ordersRepository.save(order);
+		    shoeRepository.saveAll(order.getOrderShoe().stream().map(OrderShoe::getShoe).collect(Collectors.toList()));
+		    
+		    return "success"; // All items processed successfully
 		}
-	}
 	
 	public List<Orders> findAllOrders() {
 		return ordersRepository.findAll();

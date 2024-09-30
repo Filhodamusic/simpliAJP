@@ -1,7 +1,9 @@
 package com.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 
@@ -19,8 +22,9 @@ public class Orders {
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private int oid;
 private LocalDateTime orderdatatime;
-private int qty;
-private int pid;
+@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<OrderShoe> orderShoe;
+
 @ManyToOne
 @JoinColumn(name = "emailid", nullable = false)
 private Login login;
@@ -37,17 +41,11 @@ public LocalDateTime getOrderdatatime() {
 public void setOrderdatatime(LocalDateTime orderdatatime) {
 	this.orderdatatime = orderdatatime;
 }
-public int getQty() {
-	return qty;
+public List<OrderShoe> getOrderShoe() {
+    return orderShoe;
 }
-public void setQty(int qty) {
-	this.qty = qty;
-}
-public int getPid() {
-	return pid;
-}
-public void setPid(int pid) {
-	this.pid = pid;
+public void setOrderShoe(List<OrderShoe> orderShoe) {
+    this.orderShoe = orderShoe;
 }
 public Login getLogin() {
 	return login;
