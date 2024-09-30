@@ -1,19 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <title>User Shoe Page</title>
 </head>
 <body>
-<h2>Place an Order</h2>
-<form th:action="@{/orders/place}" method="post">
-    <label for="pid">Product ID:</label>
-    <input type="number" id="pid" name="pid" required/><br/><br/>
-    
-    <label for="qty">Quantity:</label>
-    <input type="number" id="qty" name="qty" required/><br/><br/>
-    
-    <input type="submit" value="Place Order"/>
-</form>
+
+<h2>Available Shoes</h2>
+
+<!-- Display success or error message if available -->
+<div th:if="${errorMessage}">
+    <p style="color: red;" th:text="${errorMessage}"></p>
+</div>
+<div th:if="${successMessage}">
+    <p style="color: green;" th:text="${successMessage}"></p>
+</div>
+
+<!-- Display all shoes in a table -->
+<table border="1">
+    <thead>
+        <tr>
+            <th>Product ID</th>
+            <th>Name</th>
+            <th>Brand</th>
+            <th>Price</th>
+            <th>Available Quantity</th>
+            <th>Order Quantity</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Iterate over each shoe and display details -->
+        <tr th:each="shoe : ${shoes}">
+            <td th:text="${shoe.pid}"></td>
+            <td th:text="${shoe.pname}"></td>
+            <td th:text="${shoe.pbrand}"></td>
+            <td th:text="${shoe.price}"></td>
+            <td th:text="${shoe.qty}"></td>
+
+            <!-- Form for placing an order for this shoe -->
+            <td>
+                <form th:action="@{/orders/place}" method="post">
+                    <!-- Hidden input to submit the Product ID -->
+                    <input type="hidden" name="pid" th:value="${shoe.pid}" />
+
+                    <!-- Input field to submit quantity -->
+                    <input type="number" name="qty" min="1" placeholder="Enter quantity" required />
+
+                    <!-- Submit button to place order -->
+                    <input type="submit" value="Order Now" />
+                </form>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+</head>
+<body>
+    <h2>Place an Order</h2>
+    <form th:action="@{/orders/place}" method="post">
+        <label for="pid">Product ID:</label>
+        <input type="number" id="pid" name="pid" required/><br/><br/>
+        
+        <label for="qty">Quantity:</label>
+        <input type="number" id="qty" name="qty" required/><br/><br/>
+        
+        <input type="submit" value="Place Order"/>
+    </form>
+
+    <h2>Your Orders</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Order Date-Time</th>
+                <th>Quantity</th>
+                <th>Product ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Iterate over the list of orders -->
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.oid}"></td>
+                <td th:text="${order.orderdatatime}"></td>
+                <td th:text="${order.qty}"></td>
+                <td th:text="${order.pid}"></td>
+            </tr>
+        </tbody>
+    </table>
+<br/>
+
+
 </body>
 </html>

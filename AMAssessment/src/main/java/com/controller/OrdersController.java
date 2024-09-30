@@ -1,5 +1,7 @@
 package com.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,10 @@ import com.entity.LoginTransfer;
 import com.entity.Orders;
 import com.service.LoginService;
 import com.service.OrdersService;
+import com.service.ShoeService;
+import org.springframework.ui.Model;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
@@ -27,37 +32,45 @@ public class OrdersController {
 	OrdersService ordersService;
 	@Autowired
 	LoginService loginService;
+	@Autowired
+	ShoeService shoeService;
+
 // curl -X POST http://localhost:9191/orders/place -H "Content-Type:application/json" -d '{"pid":111,"qty":2}'
+	
 	@PostMapping(value = "place")
-	public String placeOrders(@RequestParam("pid") int pid, @RequestParam("qty") int qty, HttpSession session) {
-	    Orders myOrder = new Orders();
-	    myOrder.setPid(pid);
-	    myOrder.setQty(qty);
+	public void placeOrders(@RequestParam("pid") int pid, @RequestParam("qty") int qty, HttpSession session, Model mm,HttpServletResponse response) throws IOException {
+		try {
+			Orders myOrder = new Orders();
+		    myOrder.setPid(pid);
+		    myOrder.setQty(qty);
+		    String result;
+	
+		    LoginTransfer myLoginTransfer = (LoginTransfer) session.getAttribute("loggedInUser");
+		    if (myLoginTransfer != null) {
+		        myOrder.setLogin(loginService.findLoginByEmail(myLoginTransfer.getEmailid()));
+		    }
+		    result=ordersService.placeOrder(myOrder);
+		    if(result.contentEquals("success")) {
+	           mm.addAttribute("shoes", shoeService.findAll());
+	           mm.addAttribute("successMessage", "Order placed successfully!");
+		    } else {
+	    	  mm.addAttribute("shoes", shoeService.findAll());
+	          mm.addAttribute("errorMessage", "Failed to place order. Please try again.");
 
-	    LoginTransfer myLoginTransfer = (LoginTransfer) session.getAttribute("loggedInUser");
-	    if (myLoginTransfer != null) {
-	        myOrder.setLogin(loginService.findLoginByEmail(myLoginTransfer.getEmailid()));
-	    }
-
-	    return ordersService.placeOrder(myOrder);
+		    } 
+		          
+	    } catch (Exception e) {
+            // Handle failure and display error message
+            mm.addAttribute("shoes", shoeService.findAll());
+            mm.addAttribute("errorMessage", "Failed to place order. Please try again.");
+        }
+		response.sendRedirect("/user");
 	}
 
-//	@PostMapping(value = "place")
-//	public String placeOrders(@RequestBody OrdersTransfer orderRequest, HttpSession session) {
-//	    Orders myOrder = new Orders();
-//	    myOrder.setPid(orderRequest.getPid()); 
-//	    myOrder.setQty(orderRequest.getQty()); 
-//	   
-//	    LoginTransfer myLoginTransfer = (LoginTransfer) session.getAttribute("loggedInUser");
-//	    if (myLoginTransfer != null) {
-//	        myOrder.setLogin(loginService.findLoginByEmail(myLoginTransfer.getEmailid()));
-//	    }
-//	    return ordersService.placeOrder(myOrder);
-//	}
 
 	
 	// curl -X GET http://localhost:9191/orders/find
-	@GetMapping(value = "find",produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "orders/find",produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<Orders> findAllOrders() {
 		return ordersService.findAllOrders();
 	}
@@ -73,4 +86,17 @@ public class OrdersController {
 	public List<Orders> findOrderDetailsByPId(@RequestParam("pid") int pid) {
 		return ordersService.findOrdersByShoeId(pid);
 	}
+	
+	@GetMapping(value = "findorderbyemailid",produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<Orders> findOrderDetailsByEmailId(HttpSession session,HttpServletResponse response) throws IOException {
+	    LoginTransfer myLoginTransfer = (LoginTransfer) session.getAttribute("loggedInUser");
+	    List<Orders> ordersList = new ArrayList<>();
+	    if (myLoginTransfer != null) {
+	        ordersList = ordersService.findOrdersByEmailId(myLoginTransfer.getEmailid());
+	    }
+	    response.sendRedirect("/user");
+	    return ordersList;
+	}
+	
+
 }

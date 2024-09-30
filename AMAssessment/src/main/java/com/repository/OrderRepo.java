@@ -19,4 +19,7 @@ public interface OrderRepo extends JpaRepository<Orders, Integer>{
 	@Query("select o from Orders o where o.orderdatatime = :orderdatatime")
 	public List<Orders> findOrderByDate(@Param("orderdatatime") int orderdatatime);
 	
+	@Query("select o from Orders o where o.login.emailid = :emailid")
+	public List<Orders> findOrderByEmailId(@Param("emailid") String emailid);
+	
 }

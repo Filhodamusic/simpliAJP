@@ -20,6 +20,7 @@ public class Shoe {
 	private int pid;
 	@NotBlank(message = "Product Name required")
 	private String pname;
+	private String pbrand;
 	@Min(value = 10,message = "price value must be > 10")
 	@Max(value = 500,message = "price value must be < 500")
 	private float price;
@@ -57,6 +58,12 @@ public class Shoe {
 	}
 	public void setOrders(List<Orders> orders) {
 		this.orders = orders;
+	}
+	public String getPbrand() {
+		return pbrand;
+	}
+	public void setPbrand(String pbrand) {
+		this.pbrand = pbrand;
 	}
 
 

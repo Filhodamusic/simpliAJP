@@ -26,13 +26,17 @@ public class OrdersService {
 		Optional<Shoe> result = shoeRepository.findById(order.getPid());
 		if(result.isPresent()) {
 			Shoe p = result.get();
-			order.setOrderdatatime(LocalDateTime.now());
-			ordersRepository.save(order);
-			p.setQty(p.getQty()-order.getQty());
-			shoeRepository.saveAndFlush(p);
-			return "order placed successfully";
+			if (p.getQty()-order.getQty()>=0) {
+				order.setOrderdatatime(LocalDateTime.now());
+				ordersRepository.save(order);
+				p.setQty(p.getQty()-order.getQty());
+				shoeRepository.saveAndFlush(p);
+				return "success";
+			}else {
+				return "failure";
+			}
 		}else {
-			return "Order not placed";
+			return "failure";
 		}
 	}
 	
@@ -52,6 +56,9 @@ public class OrdersService {
 	
 	public List<Orders> findOrdersByShoeId(int pid){
 		return ordersRepository.findOrderByProcuctId(pid);
+	}
+	public List<Orders> findOrdersByEmailId(String emailId){
+		return ordersRepository.findOrderByEmailId(emailId);
 	}
 	
 }
