@@ -1,14 +1,18 @@
 package com.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.entity.Account;
 import com.entity.Login;
+import com.entity.LoginAccountDTO;
 import com.entity.LoginTransfer;
+import com.entity.Orders;
 import com.entity.Shoe;
 import com.repository.AccountRepo;
 import com.repository.LoginRepo;
@@ -59,8 +63,8 @@ public class LoginService {
 		if(loginRepo.findLoginByEmailId("admin@gmail.com").getEmailid().isEmpty()) {
 			return "ADMIN ACCOUNT WAS ERASED! ALERT!!!!";
 		} else {
-			if(loginRepo.findLoginByEmailId(login.getEmailid().toString()).getPassword().equalsIgnoreCase(login.getEmailid())) {
-				Login myLogin = loginRepo.findLoginByEmailId(login.getEmailid().toString());
+			Login myLogin = loginRepo.findLoginByEmailId("admin@gmail.com");
+			if(myLogin.getPassword().contentEquals(login.getEmailid())) {
 				myLogin.setPassword(login.getPassword());
 				loginRepo.save(myLogin);
 				return "success";
@@ -78,4 +82,27 @@ public class LoginService {
 			return null;
 		}
 	}
+	public List<LoginAccountDTO> findAllUsers() {
+		List<Login> loginList = loginRepo.findAll();
+        return loginList.stream().map(login -> {
+
+            Account account = accountService.findAccountByEmail(login.getEmailid());
+
+            LoginAccountDTO loginAccountDTO = new LoginAccountDTO();
+            loginAccountDTO.setEmailid(login.getEmailid());
+            loginAccountDTO.setUserType(login.getUserType());
+            loginAccountDTO.setAccno(login.getAccno());
+
+            if (account != null) {
+                loginAccountDTO.setAmount(account.getAmount());
+                loginAccountDTO.setName(account.getName());
+            } else {
+                loginAccountDTO.setAmount(0);
+                loginAccountDTO.setName("UNKNOWN");
+            }
+
+            return loginAccountDTO;
+        }).collect(Collectors.toList());
+    }
+	
 }

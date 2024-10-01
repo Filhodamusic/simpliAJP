@@ -13,4 +13,6 @@ public interface AccountRepo extends JpaRepository<Account, Integer>{
 
 	@Query("select acc.accno from Account acc where acc.emailid=:emailid")
 	public int findAccountUsingEmailiId(@Param("emailid") String emailid);
+	@Query("select a from Account a where a.emailid=:emailid")
+	public Account findAccountFullUsingEmailiId(@Param("emailid") String emailid);
 }

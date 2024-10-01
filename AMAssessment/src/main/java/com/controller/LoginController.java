@@ -38,10 +38,13 @@ public class LoginController {
 	}
 	
 	@RequestMapping(value = "/admin",method = RequestMethod.GET)
-	public String openAdminPage(HttpSession session, Model mm) {  	
+	public String openAdminPage(HttpSession session, Model mm) {  
+		 mm.addAttribute("logintransfer", new LoginTransfer());
 		LoginTransfer loggedInUser = (LoginTransfer) session.getAttribute("loggedInUser");
-        if (loggedInUser != null) {
+        if (loggedInUser != null && loggedInUser.getEmailid().contentEquals("admin@gmail.com")) {
             mm.addAttribute("logintransfer", loggedInUser); 
+            mm.addAttribute("orders", ordersService.findAllOrders());
+            mm.addAttribute("usersRegistered", loginService.findAllUsers());
         }
 		return "admin";
 	}
@@ -92,14 +95,29 @@ public class LoginController {
 			return "redirect:/login?error";
 		}
 	}
-	@RequestMapping(value = "updateAdminPass",method = RequestMethod.POST)
-	public String updateAdminPass(@ModelAttribute("logintransfer") LoginTransfer ll, Model mm) {
-		mm.addAttribute("login", ll);
-		String result = loginService.updateAdminPass(ll);
-		if(result.equals("Admin pass updated")) {
-			return "success";
+	@RequestMapping(value = "/admin/updateAdminPass",method = RequestMethod.POST)
+	public String updateAdminPass(@ModelAttribute("logintransfer") LoginTransfer ll, Model mm, HttpSession session) {
+		LoginTransfer loggedInUser = (LoginTransfer) session.getAttribute("loggedInUser");
+        if (loggedInUser != null && loggedInUser.getEmailid().contentEquals("admin@gmail.com")) {
+    		mm.addAttribute("login", ll);
+    		String result = loginService.updateAdminPass(ll);
+    		if(result.equals("success")) {
+    			return "redirect:/admin";
+    		}else {
+    			return "redirect:/admin?error";
+    		}
 		}else {
-			return "failure";
+			return "redirect:/admin?error";
 		}
+
+	}
+	@RequestMapping(value = "/admin/findAllUsers",method = RequestMethod.GET)
+	public String findAllUsers(HttpSession session, Model mm) {  
+		 mm.addAttribute("logintransfer", new LoginTransfer());
+		LoginTransfer loggedInUser = (LoginTransfer) session.getAttribute("loggedInUser");
+        if (loggedInUser != null&& loggedInUser.getEmailid().contentEquals("admin@gmail.com")) {
+            
+        }
+        return "redirect:/admin";
 	}
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.entity.Account;
+import com.entity.Login;
 import com.repository.AccountRepo;
 
 @Service
@@ -66,5 +67,14 @@ public class AccountService {
 	
 	public int findAccno(String emailid) {
 		return accountRepository.findAccountUsingEmailiId(emailid);
+	}
+	
+	public Account findAccountByEmail(String emailId) {
+		Optional<Account> result=Optional.ofNullable(accountRepository.findAccountFullUsingEmailiId(emailId));
+		if(result.isPresent()) {
+			return result.get();
+		}else {
+			return null;
+		}
 	}
 }
