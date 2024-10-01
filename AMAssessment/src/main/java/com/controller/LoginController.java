@@ -2,6 +2,7 @@ package com.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,12 +10,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.entity.Login;
+import com.entity.LoginAccountDTO;
 import com.entity.LoginTransfer;
 import com.entity.OrderShoe;
 import com.entity.OrderShoeTransfer;
 import com.entity.Orders;
+import com.entity.Shoe;
 import com.service.LoginService;
 import com.service.OrdersService;
 import com.service.ShoeService;
@@ -45,6 +50,8 @@ public class LoginController {
             mm.addAttribute("logintransfer", loggedInUser); 
             mm.addAttribute("orders", ordersService.findAllOrders());
             mm.addAttribute("usersRegistered", loginService.findAllUsers());
+            mm.addAttribute("shoes", shoeService.findAll());
+            mm.addAttribute("shoe", new Shoe());
         }
 		return "admin";
 	}
@@ -119,5 +126,69 @@ public class LoginController {
             
         }
         return "redirect:/admin";
+	}
+	
+	@RequestMapping(value = "/admin/searchUser",method = RequestMethod.POST)
+	public ModelAndView searchUser(HttpSession session, Model mm,@RequestParam("emailid") String emailId) {  
+		ModelAndView mv = new ModelAndView("admin");
+		 LoginTransfer loggedInUser = (LoginTransfer) session.getAttribute("loggedInUser");
+
+        if (loggedInUser != null&& loggedInUser.getEmailid().contentEquals("admin@gmail.com")) {
+            mv.addObject("logintransfer", loggedInUser);
+            mv.addObject("orders", ordersService.findAllOrders());
+            mv.addObject("usersRegistered", loginService.findAllUsers());
+            mv.addObject("shoes", shoeService.findAll());
+        	Optional<LoginAccountDTO> login = Optional.ofNullable(loginService.searchUser(emailId));
+            if (login.isPresent()) {
+                LoginAccountDTO user = login.get();
+
+                mv.addObject("user", user);
+            } else {
+                // If no user is found, set the user to null
+            	mv.addObject("error", "No user found with the given email ID.");
+            }
+        }
+        return mv;
+	}
+	
+	@RequestMapping(value = "/admin/deleteShoe",method = RequestMethod.POST)
+	public ModelAndView deleteShoe(HttpSession session, Model mm,@RequestParam("shoeId") int shoeId) {  
+		ModelAndView mv = new ModelAndView("admin");
+		 LoginTransfer loggedInUser = (LoginTransfer) session.getAttribute("loggedInUser");
+
+        if (loggedInUser != null&& loggedInUser.getEmailid().contentEquals("admin@gmail.com")) {
+            mv.addObject("logintransfer", loggedInUser);
+            mv.addObject("orders", ordersService.findAllOrders());
+            mv.addObject("usersRegistered", loginService.findAllUsers());
+            mv.addObject("shoes", shoeService.findAll());
+            try {
+                shoeService.deletedShoe(shoeId);
+                mv.addObject("shoes", shoeService.findAll());
+                mv.addObject("successMessage", "Shoe with ID " + shoeId + " deleted successfully.");
+            } catch (Exception e) {
+                mv.addObject("errorMessage", "Error occurred while trying to delete the shoe with ID " + shoeId);
+            }
+        }
+        return mv;
+	}
+	@RequestMapping(value = "/admin/addShoe",method = RequestMethod.POST)
+	public ModelAndView addShoe(HttpSession session, Model mm,@ModelAttribute Shoe shoe) {  
+		ModelAndView mv = new ModelAndView("admin");
+		 LoginTransfer loggedInUser = (LoginTransfer) session.getAttribute("loggedInUser");
+
+        if (loggedInUser != null&& loggedInUser.getEmailid().contentEquals("admin@gmail.com")) {
+            mv.addObject("logintransfer", loggedInUser);
+            mv.addObject("orders", ordersService.findAllOrders());
+            mv.addObject("usersRegistered", loginService.findAllUsers());
+            mv.addObject("shoes", shoeService.findAll());
+            try {
+                shoeService.storeShoe(shoe);
+                mv.addObject("shoes", shoeService.findAll());
+                mv.addObject("successMessage", "Shoe added successfully.");
+            } catch (Exception e) {
+                mv.addObject("errorMessage", "Error occurred while trying to adding the shoe ");
+            }
+        }
+        return mv;
 	}
 }

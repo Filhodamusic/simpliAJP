@@ -82,6 +82,30 @@ public class LoginService {
 			return null;
 		}
 	}
+	
+	public LoginAccountDTO searchUser(String emailId) {
+		Login login = loginRepo.findLoginByEmailId(emailId);
+        if (login != null) {
+            Account account = accountService.findAccountByEmail(login.getEmailid());
+            LoginAccountDTO loginAccountDTO = new LoginAccountDTO();
+            loginAccountDTO.setEmailid(login.getEmailid());
+            loginAccountDTO.setUserType(login.getUserType());
+            loginAccountDTO.setAccno(login.getAccno());
+
+            if (account != null) {
+                loginAccountDTO.setAmount(account.getAmount());
+                loginAccountDTO.setName(account.getName());
+            } else {
+                loginAccountDTO.setAmount(0);
+                loginAccountDTO.setName("UNKNOWN");
+            }
+
+            return loginAccountDTO;
+        } else {
+        	return null;
+        }
+    }
+        
 	public List<LoginAccountDTO> findAllUsers() {
 		List<Login> loginList = loginRepo.findAll();
         return loginList.stream().map(login -> {
