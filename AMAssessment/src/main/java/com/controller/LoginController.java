@@ -27,7 +27,6 @@ import com.service.ShoeService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-//@RequestMapping("login")
 public class LoginController {
 	@Autowired
 	LoginService loginService;
@@ -162,7 +161,7 @@ public class LoginController {
             mv.addObject("orders", ordersService.findAllOrders());
             mv.addObject("usersRegistered", loginService.findAllUsers());
             mv.addObject("shoes", shoeService.findAll());
-            
+            mv.addObject("shoe", new Shoe());
             try {
                 shoeService.deletedShoe(shoeId);
                 mv.addObject("shoes", shoeService.findAll());
