@@ -105,28 +105,37 @@
         <!-- Right side: All Shoes -->
         <div class="right">
             <h3>All Shoes</h3>
-            <div th:if="${shoes != null}">
-                <p>Total Shoes: <span th:text="${#lists.size(shoes)}"></span></p>
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <th>Product ID</th>
-                            <th>Product Name</th>
-                            <th>Brand</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="shoe : ${shoes}">
-                            <td th:text="${shoe.pid}"></td>
-                            <td th:text="${shoe.pname}"></td>
-                            <td th:text="${shoe.pbrand}"></td>
-                            <td th:text="${shoe.price}"></td>
-                            <td th:text="${shoe.qty}"></td>
-                        </tr>
-                    </tbody>
-                </table>
+<div th:if="${shoes != null}">
+    <p>Total Shoes: <span th:text="${#lists.size(shoes)}"></span></p>
+
+    <label for="nameFilter">Filter by Name:</label>
+    <input type="text" id="nameFilter" onkeyup="filterShoes()" placeholder="Search for product names...">
+
+    <label for="brandFilter">Filter by Brand:</label>
+    <input type="text" id="brandFilter" onkeyup="filterShoes()" placeholder="Search for brands...">
+
+    <table border="1" id="shoeTable">
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Brand</th>
+                <th>Price</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="shoe : ${shoes}">
+                <td th:text="${shoe.pid}"></td>
+                <td th:text="${shoe.pname}"></td>
+                <td th:text="${shoe.pbrand}"></td>
+                <td th:text="${shoe.price}"></td>
+                <td th:text="${shoe.qty}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+            
                 <h3>Delete a Shoe</h3>
     <form th:action="@{/admin/deleteShoe}" method="post">
         <label for="shoeId">Enter Shoe ID:</label>
@@ -163,6 +172,36 @@
         </tr>
     </table>
 </form>
+    <h3>Update Shoe</h3>
+<form th:action="@{/admin/updateShoe}" method="post" th:object="${shoe}">
+    <table>
+        <tr>
+            <td><label for="pid">Product ID:</label></td>
+            <td><input type="number" th:field="*{pid}" id="pid" name="pid" min="1" required/></td>
+        </tr>
+        <tr>
+            <td><label for="pname">Product Name:</label></td>
+            <td><input type="text" th:field="*{pname}" id="pname" name="pname"/></td>
+        </tr>
+        <tr>
+            <td><label for="pbrand">Product Brand:</label></td>
+            <td><input type="text" th:field="*{pbrand}" id="pbrand" name="pbrand"/></td>
+        </tr>
+        <tr>
+            <td><label for="price">Price:</label></td>
+            <td><input type="number" th:field="*{price}" id="price" name="price" min="10" max="500"/></td>
+        </tr>
+        <tr>
+            <td><label for="qty">Quantity:</label></td>
+            <td><input type="number" th:field="*{qty}" id="qty" name="qty" min="0"/></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="Update Shoe"/>
+            </td>
+        </tr>
+    </table>
+</form>
             </div>
 
             <div th:if="${shoes == null || #lists.size(shoes) == 0}">
@@ -171,5 +210,36 @@
         </div>
         
     </div>
+    <script>
+function filterShoes() {
+    // Get the filter input values
+    let nameInput = document.getElementById('nameFilter').value.toLowerCase();
+    let brandInput = document.getElementById('brandFilter').value.toLowerCase();
+
+    // Get the table and all rows
+    let table = document.getElementById('shoeTable');
+    let rows = table.getElementsByTagName('tr');
+
+    // Loop through all table rows (skipping the header row)
+    for (let i = 1; i < rows.length; i++) {
+        let nameCell = rows[i].getElementsByTagName('td')[1];
+        let brandCell = rows[i].getElementsByTagName('td')[2];
+
+        if (nameCell && brandCell) {
+            let nameText = nameCell.textContent || nameCell.innerText;
+            let brandText = brandCell.textContent || brandCell.innerText;
+
+            // Check if the row matches the filters
+            if (nameText.toLowerCase().indexOf(nameInput) > -1 && brandText.toLowerCase().indexOf(brandInput) > -1) {
+                rows[i].style.display = ''; // Show row
+            } else {
+                rows[i].style.display = 'none'; // Hide row
+            }
+        }
+    }
+}
+</script>
+    
 </body>
 </html>
+

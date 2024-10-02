@@ -138,6 +138,7 @@ public class LoginController {
             mv.addObject("orders", ordersService.findAllOrders());
             mv.addObject("usersRegistered", loginService.findAllUsers());
             mv.addObject("shoes", shoeService.findAll());
+            mm.addAttribute("shoe", new Shoe());
         	Optional<LoginAccountDTO> login = Optional.ofNullable(loginService.searchUser(emailId));
             if (login.isPresent()) {
                 LoginAccountDTO user = login.get();
@@ -161,6 +162,7 @@ public class LoginController {
             mv.addObject("orders", ordersService.findAllOrders());
             mv.addObject("usersRegistered", loginService.findAllUsers());
             mv.addObject("shoes", shoeService.findAll());
+            
             try {
                 shoeService.deletedShoe(shoeId);
                 mv.addObject("shoes", shoeService.findAll());
@@ -187,6 +189,26 @@ public class LoginController {
                 mv.addObject("successMessage", "Shoe added successfully.");
             } catch (Exception e) {
                 mv.addObject("errorMessage", "Error occurred while trying to adding the shoe ");
+            }
+        }
+        return mv;
+	}
+	@RequestMapping(value = "/admin/updateShoe",method = RequestMethod.POST)
+	public ModelAndView updatehoe(HttpSession session, Model mm,@ModelAttribute Shoe shoe) {  
+		ModelAndView mv = new ModelAndView("admin");
+		 LoginTransfer loggedInUser = (LoginTransfer) session.getAttribute("loggedInUser");
+
+        if (loggedInUser != null&& loggedInUser.getEmailid().contentEquals("admin@gmail.com")) {
+            mv.addObject("logintransfer", loggedInUser);
+            mv.addObject("orders", ordersService.findAllOrders());
+            mv.addObject("usersRegistered", loginService.findAllUsers());
+            mv.addObject("shoes", shoeService.findAll());
+            try {
+                shoeService.updateShoeDetails(shoe);
+                mv.addObject("shoes", shoeService.findAll());
+                mv.addObject("successMessage", "Shoe updated successfully.");
+            } catch (Exception e) {
+                mv.addObject("errorMessage", "Error occurred while trying to update the shoe ");
             }
         }
         return mv;

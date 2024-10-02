@@ -29,6 +29,12 @@ public class ShoeService {
 		Optional<Shoe> result = shoeRepository.findById(shoe.getPid());
 		if(result.isPresent()) {
 			Shoe s	= result.get();
+			if(!shoe.getPbrand().isEmpty()) {
+				s.setPbrand(shoe.getPbrand());
+			}
+			if(!shoe.getPname().isEmpty()) {
+				s.setPname(shoe.getPname());
+			}
 			s.setPrice(shoe.getPrice());
 			s.setQty(shoe.getQty());
 			shoeRepository.saveAndFlush(s);

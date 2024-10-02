@@ -49,14 +49,17 @@ public class OrdersController {
 			
 	        for (OrderShoeTransfer.OrderShoeItem item : orderShoeTransfer.getOrderShoes()) {
 	            OrderShoe orderShoe = new OrderShoe();
-	            orderShoe.setQuantity(item.getQuantity());
+	            if(item.getPid()>0 && item.getQuantity()>0) {
+	            	orderShoe.setQuantity(item.getQuantity());
 
-	            // Set the shoe object in the orderShoe
-	            Shoe shoe = new Shoe();
-	            shoe.setPid(item.getPid());
-	            orderShoe.setShoe(shoe);;
-	            System.out.println("Product ID: " + item.getPid() + ", Quantity: " + item.getQuantity());
-	            orderShoeList.add(orderShoe);
+		            // Set the shoe object in the orderShoe
+		            Shoe shoe = new Shoe();
+		            shoe.setPid(item.getPid());
+		            orderShoe.setShoe(shoe);;
+		            System.out.println("Product ID: " + item.getPid() + ", Quantity: " + item.getQuantity());
+		            orderShoeList.add(orderShoe);
+	            }
+	            
 	        }
 	        myOrder.setOrderShoe(orderShoeList);
 	
